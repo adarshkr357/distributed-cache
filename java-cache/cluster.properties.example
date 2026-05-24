@@ -1,0 +1,34 @@
+# Distributed Cache Cluster Configuration
+# Copy this to cluster.properties and adjust values
+
+# Node definitions: node.<id>.host, node.<id>.port
+node.1.host=cache-node-1
+node.1.port=6001
+node.1.slave.host=cache-node-2
+node.1.slave.port=6002
+
+node.2.host=cache-node-2
+node.2.port=6002
+node.2.slave.host=cache-node-3
+node.2.slave.port=6003
+
+node.3.host=cache-node-3
+node.3.port=6003
+node.3.slave.host=cache-node-1
+node.3.slave.port=6001
+
+# Cluster settings
+cluster.node.count=3
+cluster.virtual.nodes=150
+cluster.max.capacity=1000
+cluster.heartbeat.interval.ms=5000
+cluster.heartbeat.max.misses=3
+
+# MySQL connection
+mysql.url=jdbc:mysql://mysql:3306/distributed_cache?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+mysql.user=cache_user
+mysql.password=cache_password
+
+# Current node (set via environment variable CACHE_NODE_ID)
+# This is overridden at runtime
+current.node.id=1

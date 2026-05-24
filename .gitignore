@@ -1,0 +1,47 @@
+# Environment
+.env
+*.env.local
+
+# Java
+java-cache/target/
+*.class
+*.jar
+*.war
+*.log
+dependency-reduced-pom.xml
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-error.log*
+.pnp.*
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+*.egg
+.eggs/
+
+# Dashboard build
+dashboard/dist/
+dashboard/node_modules/
+
+# Management API
+management-api/node_modules/
+
+# Docker
+mysql_data/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db

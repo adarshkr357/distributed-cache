@@ -1,0 +1,129 @@
+services:
+  mysql:
+    image: mysql:8.1
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-distributed_cache}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./db/migrations:/docker-entrypoint-initdb.d/migrations
+      - ./db/seed.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - cache_net
+
+  cache-node-1:
+    build:
+      context: ./java-cache
+      dockerfile: Dockerfile
+    environment:
+      - CACHE_MODE=single
+      - CACHE_NODE_ID=1
+      - MYSQL_URL=jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-distributed_cache}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MAX_CAPACITY=${MAX_CAPACITY:-10000}
+    ports:
+      - "6001:6001"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - cache_net
+
+  cache-node-2:
+    build:
+      context: ./java-cache
+      dockerfile: Dockerfile
+    environment:
+      - CACHE_MODE=single
+      - CACHE_NODE_ID=2
+      - MYSQL_URL=jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-distributed_cache}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MAX_CAPACITY=${MAX_CAPACITY:-10000}
+    ports:
+      - "6002:6002"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - cache_net
+
+  cache-node-3:
+    build:
+      context: ./java-cache
+      dockerfile: Dockerfile
+    environment:
+      - CACHE_MODE=single
+      - CACHE_NODE_ID=3
+      - MYSQL_URL=jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-distributed_cache}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MAX_CAPACITY=${MAX_CAPACITY:-10000}
+    ports:
+      - "6003:6003"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - cache_net
+
+  management-api:
+    build:
+      context: ./management-api
+      dockerfile: Dockerfile
+    environment:
+      - PORT=3001
+      - API_KEY=${API_KEY}
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-distributed_cache}
+      - CACHE_NODES=${CACHE_NODES:-cache-node-1:6001,cache-node-2:6002,cache-node-3:6003}
+    ports:
+      - "3001:3001"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      cache-node-1:
+        condition: service_started
+      cache-node-2:
+        condition: service_started
+      cache-node-3:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - cache_net
+
+  dashboard:
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - management-api
+    restart: unless-stopped
+    networks:
+      - cache_net
+
+volumes:
+  mysql_data:
+
+networks:
+  cache_net:
