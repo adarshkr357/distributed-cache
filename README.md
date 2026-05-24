@@ -9,7 +9,7 @@
 
 # 🚀 Distributed In-Memory Cache
 
-A **production-ready, horizontally scalable** distributed caching system built from scratch. This project implements the same core concepts used by Redis, Memcached, and Amazon ElastiCache — consistent hashing, master-slave replication, write-ahead logging, automatic failover, and LRU eviction — as a fully containerized, observable microservice cluster.
+A **production-ready, horizontally scalable** distributed caching system built from scratch. This project implements the same core concepts used by Redis, Memcached, and Amazon ElastiCache - consistent hashing, master-slave replication, write-ahead logging, automatic failover, and LRU eviction - as a fully containerized, observable microservice cluster.
 
 ---
 
@@ -143,32 +143,32 @@ But unlike a simple in-memory dictionary, this system handles the hard problems:
 ## ✨ Features
 
 ### Core Cache Engine
-- **Consistent Hash Ring** — MD5-based hashing with **150 virtual nodes** per physical node for uniform key distribution
-- **LRU Eviction** — Automatic eviction of least-recently-used keys when memory capacity is reached, powered by Java's `LinkedHashMap`
-- **TTL Support** — Per-key time-to-live with background cleanup threads
-- **TCP Protocol** — Lightweight custom text protocol: `GET`, `SET`, `DELETE`, `PING`, `STATS`
+- **Consistent Hash Ring** - MD5-based hashing with **150 virtual nodes** per physical node for uniform key distribution
+- **LRU Eviction** - Automatic eviction of least-recently-used keys when memory capacity is reached, powered by Java's `LinkedHashMap`
+- **TTL Support** - Per-key time-to-live with background cleanup threads
+- **TCP Protocol** - Lightweight custom text protocol: `GET`, `SET`, `DELETE`, `PING`, `STATS`
 
 ### Durability & Recovery
-- **Write-Ahead Log (WAL)** — Every mutation is synchronously persisted to MySQL *before* being applied to memory, guaranteeing zero data loss on crash
-- **Snapshot & Replay** — Periodic full-state snapshots to MySQL. On restart, the node loads the latest snapshot and replays only the WAL entries after it, achieving fast recovery
-- **Crash Recovery** — Fully automatic: node boots → loads snapshot → replays WAL → resumes serving in seconds
+- **Write-Ahead Log (WAL)** - Every mutation is synchronously persisted to MySQL *before* being applied to memory, guaranteeing zero data loss on crash
+- **Snapshot & Replay** - Periodic full-state snapshots to MySQL. On restart, the node loads the latest snapshot and replays only the WAL entries after it, achieving fast recovery
+- **Crash Recovery** - Fully automatic: node boots → loads snapshot → replays WAL → resumes serving in seconds
 
 ### High Availability
-- **Master-Slave Replication** — Asynchronous replication of all writes to a designated slave node
-- **Heartbeat Monitoring** — 5-second heartbeat pings between master and slave
-- **Automatic Failover** — If a master misses 3 consecutive heartbeats (15s), the hash ring is automatically rebalanced and traffic is rerouted
-- **Consistent Hashing Rebalance** — Only ~1/N keys are redistributed when a node joins or leaves the cluster
+- **Master-Slave Replication** - Asynchronous replication of all writes to a designated slave node
+- **Heartbeat Monitoring** - 5-second heartbeat pings between master and slave
+- **Automatic Failover** - If a master misses 3 consecutive heartbeats (15s), the hash ring is automatically rebalanced and traffic is rerouted
+- **Consistent Hashing Rebalance** - Only ~1/N keys are redistributed when a node joins or leaves the cluster
 
 ### Observability
-- **React Dashboard** — Dark-themed, glassmorphic monitoring UI with live auto-refresh
-- **Topology Visualization** — See all nodes, their status, and replication links in real-time
-- **Memory Usage Charts** — Historical memory consumption graphed with Recharts
-- **WAL Log Viewer** — Inspect the write-ahead log directly from the dashboard
-- **Replication Lag Monitoring** — Track how far behind each slave is from its master
+- **React Dashboard** - Dark-themed, glassmorphic monitoring UI with live auto-refresh
+- **Topology Visualization** - See all nodes, their status, and replication links in real-time
+- **Memory Usage Charts** - Historical memory consumption graphed with Recharts
+- **WAL Log Viewer** - Inspect the write-ahead log directly from the dashboard
+- **Replication Lag Monitoring** - Track how far behind each slave is from its master
 
 ### Security
-- **API Key Authentication** — All management API endpoints are protected by an `X-API-Key` header
-- **Environment-Based Configuration** — All secrets (DB passwords, API keys) are injected via environment variables, never hardcoded
+- **API Key Authentication** - All management API endpoints are protected by an `X-API-Key` header
+- **Environment-Based Configuration** - All secrets (DB passwords, API keys) are injected via environment variables, never hardcoded
 
 ---
 
@@ -310,7 +310,7 @@ client = CacheClient([
 # Store a value with 1-hour TTL
 client.set("user:1001", '{"name": "Adarsh", "role": "admin"}', ttl=3600)
 
-# Retrieve it — the SDK automatically routes to the correct node
+# Retrieve it - the SDK automatically routes to the correct node
 user = client.get("user:1001")
 print(user)  # '{"name": "Adarsh", "role": "admin"}'
 
@@ -418,7 +418,7 @@ curl -H "X-API-Key: $API_KEY" \
 
 ### Consistent Hashing
 
-Traditional hashing (`hash(key) % N`) breaks catastrophically when you add or remove a node — nearly every key maps to a different server, causing a **thundering herd** of cache misses that can take down your database.
+Traditional hashing (`hash(key) % N`) breaks catastrophically when you add or remove a node - nearly every key maps to a different server, causing a **thundering herd** of cache misses that can take down your database.
 
 Consistent hashing solves this by mapping both **keys and nodes** onto a virtual ring (0 to 2³²):
 
@@ -444,7 +444,7 @@ When **Node B dies**, only the keys between Node C and Node B move to Node A. **
 
 ### Write-Ahead Log (WAL)
 
-The WAL guarantees **durability** — no acknowledged write is ever lost, even during a crash:
+The WAL guarantees **durability** - no acknowledged write is ever lost, even during a crash:
 
 ```
 Client              Cache Node              MySQL (WAL)
@@ -683,7 +683,7 @@ print('All integration tests passed!')
 
 ## 📄 License
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
